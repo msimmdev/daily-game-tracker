@@ -1,0 +1,21 @@
+{
+  "name": "daily-game-tracker",
+  "version": "1.0.0",
+  "description": "Tracks your progress in various daily games.",
+  "main": "dist/background.js",
+  "scripts": {
+    "dev": "nodemon",
+    "test": "vitest",
+    "build": "npx typescript && copyfiles -u 1 src/icons/* src/*.html src/manifest.json src/vendor/* dist"
+  },
+  "author": "Michael Simm",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chrome": "0.0.266",
+    "copyfiles": "^2.4.1",
+    "nodemon": "^3.1.0",
+    "prettier": "^3.2.5",
+    "typescipt": "^1.0.0"
+  },
+  "dependencies": {}
+}
