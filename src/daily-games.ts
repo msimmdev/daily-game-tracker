@@ -76,7 +76,14 @@ const dailyGames: DailyGame[] = [
     icon: new URL(chrome.runtime.getURL("./icons/letter-boxed.svg")),
     url: new URL("https://www.nytimes.com/puzzles/letter-boxed"),
     script: "games/nyt-letter-boxed.js",
-  }
+  },
+  {
+    game: "nyt-vertex",
+    displayName: "Vertex",
+    icon: new URL(chrome.runtime.getURL("./icons/vertex.svg")),
+    url: new URL("https://www.nytimes.com/puzzles/vertex"),
+    script: "games/nyt-vertex.js",
+  },
 ];
 
 export default dailyGames;
