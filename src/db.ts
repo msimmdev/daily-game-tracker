@@ -1,13 +1,17 @@
 const dbName = "DailyGames";
 const storeName = "GameStat";
+const configStoreName = "DailyConfig";
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const request: IDBOpenDBRequest = indexedDB.open(dbName, 1);
+    const request: IDBOpenDBRequest = indexedDB.open(dbName, 2);
     request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
       const db: IDBDatabase = request.result;
       if (!db.objectStoreNames.contains(storeName)) {
         db.createObjectStore(storeName, { keyPath: 'id' });
+      }
+      if (!db.objectStoreNames.contains(configStoreName)) {
+        db.createObjectStore(configStoreName, { keyPath: 'id' });
       }
     };
     request.onsuccess = () => {
@@ -64,4 +68,34 @@ async function getAllData(): Promise<State[]> {
   });
 }
 
-export { addData, getData, getAllData }
+// Add data to the database
+async function addGameConfig(data: GameConfigs): Promise<void> {
+  const db: IDBDatabase = await openDB();
+  const transaction: IDBTransaction = db.transaction([configStoreName], 'readwrite');
+  const store: IDBObjectStore = transaction.objectStore(configStoreName);
+  const request: IDBRequest<IDBValidKey> = store.put({ id: "gameConfig", ...data });
+  request.onsuccess = () => {
+    console.log('Data saved successfully!');
+  };
+  request.onerror = () => {
+    console.error(`Database error: ${request.error?.message}`);
+  };
+}
+
+// Add data to the database
+async function getGameConfig(): Promise<GameConfigs | undefined> {
+  const db: IDBDatabase = await openDB();
+  const transaction: IDBTransaction = db.transaction([configStoreName]);
+  const store: IDBObjectStore = transaction.objectStore(configStoreName);
+  const request: IDBRequest<GameConfigs> = store.get("gameConfig");
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => {
+      resolve(request.result);
+    };
+    request.onerror = () => {
+      reject(`Database error: ${request.error?.message}`);
+    };
+  });
+}
+
+export { addData, getData, getAllData, addGameConfig, getGameConfig }

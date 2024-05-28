@@ -1,4 +1,4 @@
-type MiniState = {
+type CrosswordState = {
   totalElapsedTime: number;
   reveals: number;
   checks: number;
@@ -6,7 +6,7 @@ type MiniState = {
   correctClues: number;
 };
 
-type MiniData = {
+type CrosswordData = {
   cells: {
     checked: boolean;
     clues: number[];
@@ -42,14 +42,23 @@ type MiniData = {
 }
 
 {
-  let gameName: string = "nyt-mini-crossword";
+  let gameName: string = "";
+  let gameType: string = "";
   let gameId: number;
   let userName = "anon";
 
+  if (window.location.href.includes("https://www.nytimes.com/crosswords/game/mini")) {
+    gameName = "nyt-mini-crossword"
+    gameType = "mini";
+  } else if (window.location.href.includes("https://www.nytimes.com/crosswords/game/daily")) {
+    gameName = "nyt-daily-crossword"
+    gameType = "daily";
+  }
+
   const observer = new MutationObserver(async (mutationList, obs) => {
-    if (!window.location.href.includes("https://www.nytimes.com/crosswords/game/mini")) {
+    if (!window.location.href.includes(`https://www.nytimes.com/crosswords/game/${gameType}`)) {
       obs.disconnect();
-      console.log("NYT Mini Crossword Tracking Disconnected");
+      console.log("NYT Crossword Tracking Disconnected");
       return;
     }
 
@@ -58,12 +67,12 @@ type MiniData = {
       setTimeout(() => {
         const gameStateJSON = localStorage.getItem(`localforage/${userName}@${gameId}`);
         if (gameStateJSON != null) {
-          const gameState = JSON.parse(gameStateJSON) as MiniData;
+          const gameState = JSON.parse(gameStateJSON) as CrosswordData;
           const blankCells = gameState.status.blankCells;
           if (lastUpdate !== blankCells) {
             lastUpdate = blankCells;
 
-            const clueCells: Record<number, MiniData["cells"]> = {};
+            const clueCells: Record<number, CrosswordData["cells"]> = {};
             gameState.cells.forEach((cell) => {
               cell.clues.forEach((clueNum) => {
                 if (clueNum in clueCells) {
@@ -78,7 +87,7 @@ type MiniData = {
               .map((cellList) => cellList.every((cell) => cell.guess !== "" && cell.guess == cell.answer) ? 1 : 0 as number)
               .reduce((accumulator, currentItem) => accumulator + currentItem);
 
-            const state: MiniState = {
+            const state: CrosswordState = {
               totalElapsedTime: gameState.timer.totalElapsedTime,
               reveals: gameState.cells.filter((item) => item.revealed).length,
               checks: gameState.cells.filter((item) => item.confirmed).length + gameState.cells.filter((item) => item.checked).length,
@@ -104,10 +113,25 @@ type MiniData = {
   });
 
   let lastUpdate: number | null = null;
-  fetch("https://www.nytimes.com/svc/crosswords/v6/puzzle/mini.json")
+  fetch(`https://www.nytimes.com/svc/crosswords/v6/puzzle/${gameType}.json`)
     .then((res) => res.json())
     .then((data) => gameId = data["id"])
+    .then(() => fetch("https://www.nytimes.com/svc/games/settings/wordleV2"))
+    .then((res) => {
+      if (res.status === 403) {
+        return null;
+      } else if (res.ok) {
+        return res.json() as Promise<WordleSettings>;
+      } else {
+        throw new Error("Unable to get Wordle user settings");
+      }
+    })
+    .then((data) => {
+      if (data !== null) {
+        userName = data.user_id.toString();
+      }
+    })
     .then(() => observer.observe(document.getRootNode(), { attributes: true, childList: true, subtree: true }))
 
-  console.log("NYT Mini Crossword Tracking Loaded!");
+  console.log("NYT Crossword Tracking Loaded!");
 }

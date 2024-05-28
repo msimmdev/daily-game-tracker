@@ -36,6 +36,13 @@ const dailyGames: DailyGame[] = [
     script: "games/nyt-crossword.js",
   },
   {
+    game: "nyt-daily-crossword",
+    displayName: "The Crossword",
+    icon: new URL(chrome.runtime.getURL("./icons/daily.svg")),
+    url: new URL("ttps://www.nytimes.com/crosswords/game/daily"),
+    script: "games/nyt-crossword.js",
+  },
+  {
     game: "nyt-sudoku-easy",
     displayName: "Sudoku (Easy)",
     icon: new URL(chrome.runtime.getURL("./icons/sudoku.svg")),

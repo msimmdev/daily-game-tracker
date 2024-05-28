@@ -1,14 +1,18 @@
-import { addData, getData } from "./db.js";
+import { addData, getData, getGameConfig } from "./db.js";
 import dailyGames from "./daily-games.js";
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   // Check if the tab has completed loading
   if (changeInfo.status === 'complete') {
     // Determine which game site is being visited
     if (typeof (tab.url) !== "undefined") {
       const matchedGame = dailyGames.find((game) => tab.url?.includes(game.url.href));
       if (typeof (matchedGame) !== "undefined") {
-        chrome.scripting.executeScript({ target: { tabId: tabId }, files: [matchedGame.script] });
+        // TODO get Game Config and check it
+        const gameConfig = await getGameConfig();
+        if (gameConfig?.enabledGames[matchedGame.game]) {
+          chrome.scripting.executeScript({ target: { tabId: tabId }, files: [matchedGame.script] });
+        }
       }
     }
   }
