@@ -46,8 +46,8 @@ chrome.runtime.onMessage.addListener(async (request: Message, sender, sendRespon
   await addData(storeId, activeGame)
 });
 
-chrome.action.onClicked.addListener((tab) => {
-  chrome.tabs.create({
-    url: "detail.html"
-  })
-})
+// chrome.action.onClicked.addListener((tab) => {
+//   chrome.tabs.create({
+//     url: "detail.html"
+//   })
+// })
