@@ -1,9 +1,10 @@
 type LetterBoxedState = {
-
+  guesses: number;
+  targetGuesses: number;
+  gotLetters: number;
+  gotLetterList: string[];
+  guessedWords: string[];
 };
-
-type LetterBoxedData = {
-}
 
 {
   const gameName: string = "nyt-letter-boxed";
@@ -19,21 +20,72 @@ type LetterBoxedData = {
 
     const game = document.querySelector(".lb-content-box");
     if (game !== null && game.checkVisibility()) {
+      const gameId = document.querySelector(".pz-game-date")?.textContent;
+      if (typeof (gameId) !== "undefined" && gameId !== null) {
 
-      const state: LetterBoxedState = {
-      };
+        const gussesWords = game.querySelectorAll(".lb-word-list__word");
+        const guesses = gussesWords.length;
 
-      const message: Message = {
-        game: gameName,
-        gameId: "", // TODO
-        status: "Incomplete", // TODO
-        stateTime: new Date().toJSON(),
-        gameState: state,
+        console.log("check", guesses, lastUpdate);
+        if (guesses !== lastUpdate) {
+          lastUpdate = guesses;
+
+          const words: string[] = [];
+          for (const word of gussesWords) {
+            const content = word.textContent;
+            if (content !== null) {
+              words.push(content);
+            }
+          }
+
+          let par = 0;
+          const targetText = game.querySelector(".lb-par");
+          if (targetText !== null) {
+            const parText = targetText.childNodes[1].textContent;
+            if (parText !== null) {
+              par = parseInt(parText);
+            }
+          }
+
+          const gotLetters: string[] = [];
+          const letterSections = game.querySelectorAll(".lb-word-list__word .opaque");
+          for (const letterSection of letterSections) {
+            const letter = letterSection.textContent;
+            if (letter !== null) {
+              gotLetters.push(letter);
+            }
+          }
+
+          const state: LetterBoxedState = {
+            guesses: guesses,
+            guessedWords: words,
+            targetGuesses: par,
+            gotLetters: gotLetters.length,
+            gotLetterList: gotLetters,
+          };
+
+          let status: Message["status"] = "Incomplete";
+          if (gotLetters.length === 12) {
+            if (guesses <= par) {
+              status = "Complete";
+            } else {
+              status = "Failed";
+            }
+          }
+
+          const message: Message = {
+            game: gameName,
+            gameId: gameId,
+            status: status,
+            stateTime: new Date().toJSON(),
+            gameState: state,
+          }
+
+          console.log("SEND", message);
+
+          chrome.runtime.sendMessage(message);
+        }
       }
-
-      console.log("SEND", message);
-
-      chrome.runtime.sendMessage(message);
     }
   });
 

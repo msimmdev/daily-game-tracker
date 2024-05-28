@@ -69,6 +69,13 @@ const dailyGames: DailyGame[] = [
     icon: new URL(chrome.runtime.getURL("./icons/spelling-bee.svg")),
     url: new URL("https://www.nytimes.com/puzzles/spelling-bee"),
     script: "games/nyt-spelling-bee.js",
+  },
+  {
+    game: "nyt-letter-boxed",
+    displayName: "Letter Boxed",
+    icon: new URL(chrome.runtime.getURL("./icons/letter-boxed.svg")),
+    url: new URL("https://www.nytimes.com/puzzles/letter-boxed"),
+    script: "games/nyt-letter-boxed.js",
   }
 ];
 
