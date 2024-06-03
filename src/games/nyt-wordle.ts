@@ -78,7 +78,7 @@ type WordleSettings = {
 
         const state: WordleState = {
           guesses: guesses,
-          hardMode: false,
+          hardMode: hardMode,
           guessList: guessList,
         };
 

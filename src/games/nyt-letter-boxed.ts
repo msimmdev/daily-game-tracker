@@ -56,16 +56,18 @@ type LetterBoxedState = {
             }
           }
 
+          const gotLettersUniq = gotLetters.filter((value, index, array) => array.indexOf(value) === index)
+
           const state: LetterBoxedState = {
             guesses: guesses,
             guessedWords: words,
             targetGuesses: par,
-            gotLetters: gotLetters.length,
-            gotLetterList: gotLetters,
+            gotLetters: gotLettersUniq.length,
+            gotLetterList: gotLettersUniq,
           };
 
           let status: Message["status"] = "Incomplete";
-          if (gotLetters.length === 12) {
+          if (gotLettersUniq.length === 12) {
             if (guesses <= par) {
               status = "Complete";
             } else {
