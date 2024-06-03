@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   await displayPage();
 });
 
+document.querySelector("#history-btn")?.addEventListener("click", () => chrome.tabs.create({ url: "detail.html" }));
+document.querySelector("#settings-btn")?.addEventListener("click", () => chrome.tabs.create({ url: "config.html" }));
+
 async function fetchData(): Promise<void> {
   const dbData = await getAllData(); // Function to fetch data from IndexedDB
   data = dbData.filter((item) => item.lastUpdateTime.split('T')[0] === today);
@@ -37,6 +40,7 @@ async function displayPage(): Promise<void> {
         }
 
         const gameLink = gameInstance.querySelector(".game-link");
+        gameLink?.setAttribute("title", gameDetail.displayName);
 
         const gameBadge = gameInstance.querySelector(".game-badge");
         if (gameBadge) {
@@ -52,10 +56,14 @@ async function displayPage(): Promise<void> {
         }
 
         container.appendChild(gameInstance);
-        gameLink?.addEventListener('click', (event) => {
-          event.preventDefault();
-          chrome.tabs.create({ url: gameDetail.url.href });
-        });
+
+        if (gameLink !== null) {
+          gameLink?.addEventListener('click', (event) => {
+            event.preventDefault();
+            chrome.tabs.create({ url: gameDetail.url.href });
+          });
+          gameLink.dispatchEvent(new Event("registerTooltip"));
+        }
       }
     }
   }

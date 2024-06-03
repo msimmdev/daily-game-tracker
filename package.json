@@ -11,6 +11,7 @@
   "author": "Michael Simm",
   "license": "MIT",
   "devDependencies": {
+    "@types/bootstrap": "^5.2.10",
     "@types/chrome": "0.0.266",
     "copyfiles": "^2.4.1",
     "nodemon": "^3.1.0",
