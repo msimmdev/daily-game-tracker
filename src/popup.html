@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" style="width: 202px">
+<html lang="en" style="width: 192px">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,18 +10,19 @@
       crossorigin="anonymous"
     />
     <title>Daily</title>
+    <link rel="stylesheet" href="main.css" />
   </head>
   <body>
-    <div class="container pt-1">
+    <header class="container py-1 text-white">
       <div class="row">
         <div class="col d-flex align-items-center justify-content-center">
-          <div class="text-nowrap">Daily</div>
+          <div class="text-nowrap"><h1 class="m-0">DGT</h1></div>
         </div>
         <div class="col col-auto">
           <div class="btn-group">
             <button
               type="button"
-              class="btn btn-outline-secondary"
+              class="btn btn-outline-light"
               id="history-btn"
             >
               <svg
@@ -39,7 +40,7 @@
             </button>
             <button
               type="button"
-              class="btn btn-outline-secondary"
+              class="btn btn-outline-light"
               id="settings-btn"
             >
               <svg
@@ -61,11 +62,13 @@
           </div>
         </div>
       </div>
+    </header>
+    <main class="container">
       <div id="gamesContainer" class="row py-3"></div>
     </div>
 
     <template id="game-item">
-      <div class="col col-auto mt-2" class="game">
+      <div class="col col-auto p-2 m-1 game-item" class="game">
         <a
           class="game-link"
           href=""

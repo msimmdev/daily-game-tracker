@@ -23,7 +23,7 @@ async function displayPage(): Promise<void> {
 
   const gameConfig = await getGameConfig();
   if (typeof (gameConfig) !== "undefined") {
-    for (const gameName of Object.keys(gameConfig.enabledGames)) {
+    for (const gameName of Object.keys(gameConfig.enabledGames).filter((game) => gameConfig.enabledGames[game])) {
       const gameDetail = dailyGames.find((daily) => daily.game === gameName);
       if (typeof (gameDetail) !== "undefined") {
         const state = data.find((storedState) => storedState.game === gameName);
