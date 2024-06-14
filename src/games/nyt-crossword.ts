@@ -95,13 +95,20 @@ type CrosswordData = {
               correctClues: correctWords,
             };
 
+            let status: Message["status"] = "Incomplete";
+            if (state.reveals > 0 || state.checks > 0) {
+              status = "Failed";
+            } else if (gameState.status.isSolved) {
+              status = "Complete";
+            }
+
             const message: Message = {
               game: gameName,
               gameId: gameId.toString(),
               status: gameState.status.isSolved ? "Complete" : "Incomplete",
               stateTime: new Date().toJSON(),
               gameState: state,
-            }
+            };
 
             console.log("SEND", message);
 
