@@ -23,6 +23,7 @@ type SpellingBeeStoredState = {
   const gameName: string = "nyt-spelling-bee";
 
   let lastUpdate: number | null = null;
+  let userName = "ANON";
 
   const observer = new MutationObserver((mutationList, obs) => {
     if (!window.location.href.includes("https://www.nytimes.com/puzzles/spelling-bee")) {
@@ -35,7 +36,7 @@ type SpellingBeeStoredState = {
     if (game !== null && game.checkVisibility()) {
       const today = new Date().toJSON().split("T")[0];
 
-      const gameStateJSON = localStorage.getItem("games-state-spelling_bee/ANON");
+      const gameStateJSON = localStorage.getItem(`games-state-spelling_bee/${userName}`);
       if (gameStateJSON != null) {
         const gameState = JSON.parse(gameStateJSON) as SpellingBeeStoredState;
         let validState: SpellingBeeDataState | null = null;
@@ -74,7 +75,24 @@ type SpellingBeeStoredState = {
     }
   });
 
-  observer.observe(document.getRootNode(), { attributes: true, childList: true, subtree: true });
+  fetch("https://www.nytimes.com/svc/games/settings/wordleV2")
+    .then((res) => {
+      if (res.status === 403) {
+        return null;
+      } else if (res.ok) {
+        return res.json() as Promise<WordleSettings>;
+      } else {
+        throw new Error("Unable to get Wordle user settings");
+      }
+    })
+    .then((data) => {
+      if (data !== null) {
+        userName = data.user_id.toString();
+      }
+    })
+    .then(() => {
+      observer.observe(document.getRootNode(), { attributes: true, childList: true, subtree: true });
+    })
 
   console.log("NYT Spelling Bee Tracking Loaded!");
 }
