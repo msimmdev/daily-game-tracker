@@ -90,7 +90,7 @@ type StrandsData = {
                 gameState: state,
               }
 
-              console.log(message);
+              console.debug(gameName, message);
 
               chrome.runtime.sendMessage(message);
             }

@@ -48,7 +48,7 @@ type VertexData = {
               gameState: state,
             }
 
-            console.log("SEND", message);
+            console.debug(gameName, message);
 
             chrome.runtime.sendMessage(message);
           }
