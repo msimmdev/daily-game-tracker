@@ -92,7 +92,6 @@ type SpellingBeeStoredState = {
     })
     .then(() => {
       observer.observe(document.getRootNode(), { attributes: true, childList: true, subtree: true });
+      console.log("NYT Spelling Bee Tracking Loaded!");
     })
-
-  console.log("NYT Spelling Bee Tracking Loaded!");
 }

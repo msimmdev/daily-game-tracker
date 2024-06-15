@@ -114,7 +114,6 @@ type WordleSettings = {
     })
     .then(() => {
       observer.observe(document.getRootNode(), { attributes: true, childList: true, subtree: true });
+      console.log("Wordle Tracking Loaded!");
     })
-
-  console.log("Wordle Tracking Loaded!");
 }

@@ -138,7 +138,8 @@ type CrosswordData = {
         userName = data.user_id.toString();
       }
     })
-    .then(() => observer.observe(document.getRootNode(), { attributes: true, childList: true, subtree: true }))
-
-  console.log("NYT Crossword Tracking Loaded!");
+    .then(() => {
+      observer.observe(document.getRootNode(), { attributes: true, childList: true, subtree: true })
+      console.log("NYT Crossword Tracking Loaded!");
+    })
 }
