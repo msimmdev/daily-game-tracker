@@ -1,7 +1,13 @@
-import { getAllData } from "./db.js";
+import { getAllData, getGameConfig } from "./db.js";
 import dailyGames from "./daily-games.js";
 
 const pageSize: number = 20;
+const currentDate = new Date();
+const monthNames = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+let display: "list" | "calendar" = "calendar";
 let currentPage: number = 0;
 let dataByDay: Map<string, Map<string, State | undefined>> = new Map();
 let data: State[] = [];
@@ -10,8 +16,88 @@ document.addEventListener('DOMContentLoaded', async () => {
   await fetchData();
   initializeDays(data);
   groupDataByDay(data);
-  displayPage(currentPage);
+  await initializeCalendar();
 });
+
+async function initializeCalendar() {
+  const monthSelects = document.querySelectorAll('.month-select');
+
+  const generateMonthLinks = (year: number, month: number) => {
+    const months = [];
+    for (let i = -1; i <= 1; i++) {
+      const date = new Date(year, month + i);
+      months.push({ year: date.getFullYear(), month: date.getMonth() });
+    }
+    return months;
+  };
+
+  const updateMonthSelects = async (year: number, month: number) => {
+    const selectedDate = `${year}-${String(month + 1).padStart(2, "0")}`
+    const current = new Date();
+    const currentMonth = current.getMonth();
+    const currentYear = current.getFullYear();
+    const months = generateMonthLinks(year, month);
+
+    monthSelects.forEach(async select => {
+      const ul = select as HTMLUListElement;
+      ul.innerHTML = `
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        ${months.map(({ year: y, month: m }) => {
+        if (y > currentYear || (y === currentYear && m > currentMonth)) {
+          return `<li class="page-item disabled">
+              <span class="page-link month-link" data-year="${y}" data-month="${m}">
+                ${monthNames[m]} ${y}
+              </span>
+            </li>`;
+        }
+        return `<li class="page-item ${m === month && y === year ? 'active' : ''}">
+            ${m === month && y === year ? '<span class="page-link">' + monthNames[m] + ' ' + y + '</span>' : '<a class="page-link month-link" href="#" data-year="' + y + '" data-month="' + m + '">' + monthNames[m] + ' ' + y + '</a>'}
+          </li>`;
+      }).join('')}
+        <li class="page-item ${month === currentMonth && year === currentYear ? "disabled" : ""}">
+          ${month === currentMonth && year === currentYear ? '<span class="page-link">&raquo;</span>' : '<a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>'}
+        </li>
+      `;
+
+      ul.querySelector('.page-link[aria-label="Previous"]')?.addEventListener('click', async (event) => {
+        event.preventDefault();
+        const tempDate = new Date(year, month, 1);
+        console.log("Set Month", tempDate.getMonth() - 1);
+        tempDate.setMonth(tempDate.getMonth() - 1);
+        await updateMonthSelects(tempDate.getFullYear(), tempDate.getMonth());
+      });
+
+      ul.querySelector('.page-link[aria-label="Next"]')?.addEventListener('click', async (event) => {
+        if (!(month === currentMonth && year === currentYear)) {
+          event.preventDefault();
+          const tempDate = new Date(year, month, 1);
+          console.log("Set Month", tempDate.getMonth() + 1);
+          tempDate.setMonth(tempDate.getMonth() + 1);
+          await updateMonthSelects(tempDate.getFullYear(), tempDate.getMonth());
+        }
+      });
+
+      ul.querySelectorAll('a.month-link').forEach(link => {
+        link.addEventListener('click', async (event) => {
+          event.preventDefault();
+          const target = event.target as HTMLAnchorElement;
+          const newYear = parseInt(target.getAttribute('data-year') || '0', 10);
+          const newMonth = parseInt(target.getAttribute('data-month') || '0', 10);
+          await updateMonthSelects(newYear, newMonth);
+        });
+      });
+
+      await displayPage(selectedDate);
+    });
+  };
+
+  const now = new Date();
+  await updateMonthSelects(now.getFullYear(), now.getMonth());
+}
 
 function groupDataByDay(data: State[]): void {
   data.forEach((item) => {
@@ -25,16 +111,17 @@ function groupDataByDay(data: State[]): void {
 
 async function fetchData(): Promise<void> {
   data = await getAllData(); // Function to fetch data from IndexedDB
-  console.log(data);
+  //console.log(data);
   data.sort((a, b) => new Date(b.lastUpdateTime).getTime() - new Date(a.lastUpdateTime).getTime()); // Sorting from most recent to oldest
 }
 
-function displayPage(page: number): void {
+async function displayPage(selectedDate: string): Promise<void> {
   const container = document.getElementById('gamesContainer')!;
   container.innerHTML = '';
+  const gameConfig = await getGameConfig();
 
-  const keys = Array.from(dataByDay.keys()).sort().reverse(); // Sorted from most recent to oldest
-  const pageKeys = keys.slice(page * pageSize, (page + 1) * pageSize);
+  let keys = Array.from(dataByDay.keys()).sort();
+  const pageKeys = keys.filter((key) => key.startsWith(selectedDate))
 
   pageKeys.forEach(date => {
     const dayGames = dataByDay.get(date)!;
@@ -46,11 +133,11 @@ function displayPage(page: number): void {
       throw new Error('Element with selector ".games" not found.')
     }
 
-    dailyGames.forEach(game => {
+    dailyGames.filter((game) => gameConfig?.enabledGames[game.game]).forEach(game => {
       const state = dayGames.get(game.game);
       let completionStatus: State["status"];
       if (date !== new Date().toISOString().split('T')[0]) {
-        console.log(state);
+        //console.log(state);
         if (typeof (state) === "undefined" || state?.status == "Incomplete" || state?.status == "Not Started") {
           completionStatus = "Failed";
         } else {
@@ -92,8 +179,6 @@ function displayPage(page: number): void {
 
     container.appendChild(instance);
   });
-
-  document.getElementById('pageInfo')!.textContent = `Page ${page + 1} of ${Math.ceil(keys.length / pageSize)}`;
 }
 
 function initializeDays(data: State[]): void {
@@ -110,21 +195,6 @@ function initializeDays(data: State[]): void {
     currentDate.setDate(currentDate.getDate() + 1);
   }
 }
-
-function changePage(change: number): void {
-  const newPage = currentPage + change;
-  if (newPage < 0 || newPage >= Math.ceil(data.length / pageSize)) return;
-  currentPage = newPage;
-  displayPage(currentPage);
-}
-
-document.getElementById("prevButton")?.addEventListener("click", () => {
-  changePage(-1);
-});
-
-document.getElementById("nextButton")?.addEventListener("click", () => {
-  changePage(1);
-});
 
 // Helper function to safely update text content
 function updateElementText(parent: DocumentFragment, selector: string, text: string): void {

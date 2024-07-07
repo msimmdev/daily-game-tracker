@@ -9,22 +9,64 @@
       integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="main.css" />
     <title>Daily Games Tracker</title>
   </head>
   <body>
-    <header class="container mb-3">
-      <h1>Daily Games Tracker</h1>
+    <header class="container py-1 text-white">
+      <h1>DGT: History</h1>
     </header>
-    <div id="gamesContainer" class="container"></div>
-    <div class="container">
-      <ul class="pagination">
+    <nav class="container py-2" aria-label="Month Select">
+      <ul
+        class="pagination pagination-lg pagination justify-content-center m-0 month-select"
+      >
         <li class="page-item">
-          <a class="page-link" id="prevButton">Previous</a>
+          <a class="page-link" href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
         </li>
-        <li class="page-item"><span id="pageInfo"></span></li>
-        <li class="page-item"><a class="page-link" id="nextButton">Next</a></li>
+        <li class="page-item">
+          <a class="page-link month-link" href="#">April 2024</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link month-link" href="#">May 2024</a>
+        </li>
+        <li class="page-item active">
+          <a class="page-link month-link">June 2024</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
       </ul>
-    </div>
+    </nav>
+    <main id="gamesContainer" class="container"></main>
+    <nav class="container py-2" aria-label="Month Select">
+      <ul
+        class="pagination pagination-lg pagination justify-content-center m-0 month-select"
+      >
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <li class="page-item">
+          <a class="page-link month-link" href="#">April 2024</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link month-link" href="#">May 2024</a>
+        </li>
+        <li class="page-item active">
+          <a class="page-link month-link">June 2024</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
     <template id="summary-card">
       <div class="card my-1">
         <div class="card-body">
@@ -38,7 +80,7 @@
     </template>
 
     <template id="game-item">
-      <div class="col col-auto" class="game">
+      <div class="col col-auto game-item p-2 m-1" class="game">
         <div class="position-relative" style="width: 40px; height: 40px">
           <img src="" class="game-icon w-100 h-100" />
           <span

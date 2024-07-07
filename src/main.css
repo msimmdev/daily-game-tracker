@@ -1,7 +1,8 @@
 header {
   background-color: #343a40;
 }
-main {
+main,
+nav {
   background-color: #f8f9fa;
 }
 .game-item {
