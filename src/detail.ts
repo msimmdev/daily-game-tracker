@@ -1,14 +1,10 @@
 import { getAllData, getGameConfig } from "./db.js";
 import dailyGames from "./daily-games.js";
 
-const pageSize: number = 20;
-const currentDate = new Date();
 const monthNames = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
-let display: "list" | "calendar" = "calendar";
-let currentPage: number = 0;
 let dataByDay: Map<string, Map<string, State | undefined>> = new Map();
 let data: State[] = [];
 
@@ -66,7 +62,6 @@ async function initializeCalendar() {
       ul.querySelector('.page-link[aria-label="Previous"]')?.addEventListener('click', async (event) => {
         event.preventDefault();
         const tempDate = new Date(year, month, 1);
-        console.log("Set Month", tempDate.getMonth() - 1);
         tempDate.setMonth(tempDate.getMonth() - 1);
         await updateMonthSelects(tempDate.getFullYear(), tempDate.getMonth());
       });
@@ -75,7 +70,6 @@ async function initializeCalendar() {
         if (!(month === currentMonth && year === currentYear)) {
           event.preventDefault();
           const tempDate = new Date(year, month, 1);
-          console.log("Set Month", tempDate.getMonth() + 1);
           tempDate.setMonth(tempDate.getMonth() + 1);
           await updateMonthSelects(tempDate.getFullYear(), tempDate.getMonth());
         }
@@ -91,8 +85,8 @@ async function initializeCalendar() {
         });
       });
 
-      await displayPage(selectedDate);
     });
+    await displayPage(selectedDate);
   };
 
   const now = new Date();
@@ -111,7 +105,6 @@ function groupDataByDay(data: State[]): void {
 
 async function fetchData(): Promise<void> {
   data = await getAllData(); // Function to fetch data from IndexedDB
-  //console.log(data);
   data.sort((a, b) => new Date(b.lastUpdateTime).getTime() - new Date(a.lastUpdateTime).getTime()); // Sorting from most recent to oldest
 }
 
@@ -137,7 +130,6 @@ async function displayPage(selectedDate: string): Promise<void> {
       const state = dayGames.get(game.game);
       let completionStatus: State["status"];
       if (date !== new Date().toISOString().split('T')[0]) {
-        //console.log(state);
         if (typeof (state) === "undefined" || state?.status == "Incomplete" || state?.status == "Not Started") {
           completionStatus = "Failed";
         } else {
