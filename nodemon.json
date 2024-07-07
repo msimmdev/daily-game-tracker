@@ -2,5 +2,5 @@
   "ignore": ["**/*.test.ts", "**/*.spec.ts", "node_modules"],
   "watch": ["src"],
   "exec": "npm run build",
-  "ext": "ts,json,html"
+  "ext": "ts,json,html,css"
 }
