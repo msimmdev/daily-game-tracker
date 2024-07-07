@@ -5,8 +5,8 @@ main,
 nav {
   background-color: #f8f9fa;
 }
-footer a {
-  color: #343a40;
+footer {
+  background-color: #343a40;
 }
 .game-item {
   background-color: #ffffff;
