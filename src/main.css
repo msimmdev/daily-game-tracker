@@ -5,6 +5,9 @@ main,
 nav {
   background-color: #f8f9fa;
 }
+footer a {
+  color: #343a40;
+}
 .game-item {
   background-color: #ffffff;
   border-radius: 5px;

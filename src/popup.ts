@@ -11,6 +11,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 document.querySelector("#history-btn")?.addEventListener("click", () => chrome.tabs.create({ url: "detail.html" }));
 document.querySelector("#settings-btn")?.addEventListener("click", () => chrome.tabs.create({ url: "config.html" }));
+document.querySelector("#issues-link")?.addEventListener("click", (event) => {
+  event.preventDefault();
+  let link = event.target as HTMLAnchorElement;
+  chrome.tabs.create({ url: link.href });
+});
 
 async function fetchData(): Promise<void> {
   const dbData = await getAllData(); // Function to fetch data from IndexedDB
