@@ -26,11 +26,14 @@ async function displayPage(): Promise<void> {
   const container = document.getElementById('gamesContainer')!;
   container.innerHTML = '';
 
+  let noGames = true;
+
   const gameConfig = await getGameConfig();
   if (typeof (gameConfig) !== "undefined") {
     for (const gameName of Object.keys(gameConfig.enabledGames).filter((game) => gameConfig.enabledGames[game])) {
       const gameDetail = dailyGames.find((daily) => daily.game === gameName);
       if (typeof (gameDetail) !== "undefined") {
+        noGames = false;
         const state = data.find((storedState) => storedState.game === gameName);
         let completionStatus: State["status"];
         completionStatus = state?.status ?? "Not Started";
@@ -71,6 +74,18 @@ async function displayPage(): Promise<void> {
         }
       }
     }
+  }
+
+  if (noGames) {
+    const noGameTemplate = document.getElementById('no-games') as HTMLTemplateElement;
+    const noGameInstance = document.importNode(noGameTemplate.content, true);
+    const configLink = noGameInstance.querySelector(".config-link");
+    container.appendChild(noGameInstance);
+    configLink?.addEventListener("click", (event) => {
+      event.preventDefault();
+      let link = event.target as HTMLAnchorElement;
+      chrome.tabs.create({ url: link.href });
+    });
   }
 }
 
