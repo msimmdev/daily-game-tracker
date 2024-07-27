@@ -5,7 +5,6 @@
   "description": "Tracks your progress in various daily games.",
   "permissions": [
     "tabs",
-    "storage",
     "scripting"
   ],
   "host_permissions": [
