@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon",
     "test": "vitest",
-    "build": "npx typescript && copyfiles -u 1 src/icons/* src/*.html src/*.css src/manifest.json src/vendor/* dist"
+    "build": "npx -p typescript tsc && copyfiles -u 1 src/icons/* src/*.html src/*.css src/manifest.json src/vendor/* dist"
   },
   "author": "Michael Simm",
   "license": "MIT",
