@@ -84,6 +84,13 @@ const dailyGames: DailyGame[] = [
     url: new URL("https://www.nytimes.com/puzzles/vertex"),
     script: "games/nyt-vertex.js",
   },
+  {
+    game: "time-guessr",
+    displayName: "Time Guessr",
+    icon: new URL(chrome.runtime.getURL("./icons/time-guessr.svg")),
+    url: new URL("https://timeguessr.com/"),
+    script: "games/time-guessr.js"
+  }
 ];
 
 export default dailyGames;
