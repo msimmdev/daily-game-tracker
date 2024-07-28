@@ -90,6 +90,13 @@ const dailyGames: DailyGame[] = [
     icon: new URL(chrome.runtime.getURL("./icons/time-guessr.svg")),
     url: new URL("https://timeguessr.com/"),
     script: "games/time-guessr.js"
+  },
+  {
+    game: "travle",
+    displayName: "Travle",
+    icon: new URL(chrome.runtime.getURL("./icons/travle.svg")),
+    url: new URL("https://travle.earth/"),
+    script: "games/travle.js"
   }
 ];
 

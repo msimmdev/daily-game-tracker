@@ -9,7 +9,8 @@
   ],
   "host_permissions": [
     "https://www.nytimes.com/*",
-    "https://timeguessr.com/*"
+    "https://timeguessr.com/*",
+    "https://travle.earth/*"
   ],
   "background": {
     "service_worker": "background.js",
