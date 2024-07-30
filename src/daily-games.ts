@@ -97,6 +97,13 @@ const dailyGames: DailyGame[] = [
     icon: new URL(chrome.runtime.getURL("./icons/travle.svg")),
     url: new URL("https://travle.earth/"),
     script: "games/travle.js"
+  },
+  {
+    game: "countrydle",
+    displayName: "Countrydle",
+    icon: new URL(chrome.runtime.getURL("./icons/countrydle.png")),
+    url: new URL("https://www.countrydle.com/"),
+    script: "games/countrydle.js"
   }
 ];
 
