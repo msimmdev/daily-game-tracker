@@ -4,6 +4,7 @@ type TravleState = {
   guessList: string[];
   perfect: boolean;
   hardMode: boolean;
+  incorrectGuesses: number | null;
 };
 
 type TravleData = {
@@ -15,13 +16,28 @@ type TravleData = {
   pastGuessIds: string[];
   perfect: boolean;
   puzzleIx: number;
+};
+
+type TravlePastGames = {
+  currentStreak: number;
+  games: {
+    gameId: number;
+    guesses: number;
+    minGuesses: number;
+    won: boolean;
+    numHints: number;
+    perfect: boolean;
+  }[];
+  lastGameId: number;
+  longestStreak: number;
+  winPerc: number;
 }
 
 {
   const gameName = "travle";
   let lastUpdate: number | null = null;
   const observer = new MutationObserver((mutationList, obs) => {
-    if (!window.location.href.includes(`https://travle.earth`)) {
+    if (!window.location.href.includes("https://travle.earth")) {
       obs.disconnect();
       console.log("Travle Tracking Disconnected");
       return;
@@ -34,16 +50,9 @@ type TravleData = {
         if (gameStateJSON != null) {
           const gameState = JSON.parse(gameStateJSON) as TravleData;
           const guesses = gameState.pastGuessIds.length;
+          let incorrectGuesses: number | null = null;
           if (guesses !== lastUpdate) {
             lastUpdate = guesses;
-
-            const state: TravleState = {
-              guesses: guesses,
-              hints: gameState.hintsData.length,
-              guessList: gameState.hintsData,
-              perfect: gameState.perfect,
-              hardMode: gameState.hardMode
-            };
 
             let status: Message["status"] = "Incomplete";
             if (gameState.gameProgress === "won") {
@@ -51,6 +60,28 @@ type TravleData = {
             } else if (gameState.gameProgress === "lost") {
               status = "Failed";
             }
+
+            if (status === "Complete" || status === "Failed") {
+              const pastGameJSON = localStorage.getItem("travle-past-games");
+              if (pastGameJSON !== null) {
+                const pastGames = JSON.parse(pastGameJSON) as TravlePastGames;
+                if (pastGames !== null) {
+                  const todaysPastGame = pastGames.games.find((pastGame) => pastGame.gameId === gameState.puzzleIx);
+                  if (typeof (todaysPastGame) !== "undefined") {
+                    incorrectGuesses = todaysPastGame.guesses - todaysPastGame.minGuesses;
+                  }
+                }
+              }
+            }
+
+            const state: TravleState = {
+              guesses: guesses,
+              hints: gameState.hintsData.length,
+              guessList: gameState.pastGuessIds,
+              perfect: gameState.perfect,
+              hardMode: gameState.hardMode,
+              incorrectGuesses: incorrectGuesses,
+            };
 
             const message: Message = {
               game: gameName,
