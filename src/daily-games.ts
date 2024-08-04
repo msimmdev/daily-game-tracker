@@ -104,6 +104,13 @@ const dailyGames: DailyGame[] = [
     icon: new URL(chrome.runtime.getURL("./icons/countrydle.png")),
     url: new URL("https://www.countrydle.com/"),
     script: "games/countrydle.js"
+  },
+  {
+    game: "eo-guesser",
+    displayName: "EOGuesser",
+    icon: new URL(chrome.runtime.getURL("./icons/eo-guesser.png")),
+    url: new URL("https://s2maps.eu/eo-guesser/"),
+    script: "games/eoguesser.js"
   }
 ];
 

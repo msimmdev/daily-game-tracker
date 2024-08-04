@@ -11,7 +11,8 @@
     "https://www.nytimes.com/*",
     "https://timeguessr.com/*",
     "https://travle.earth/*",
-    "https://www.countrydle.com/*"
+    "https://www.countrydle.com/*",
+    "https://s2maps.eu/*"
   ],
   "background": {
     "service_worker": "background.js",
