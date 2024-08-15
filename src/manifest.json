@@ -12,7 +12,8 @@
     "https://timeguessr.com/*",
     "https://travle.earth/*",
     "https://www.countrydle.com/*",
-    "https://s2maps.eu/*"
+    "https://s2maps.eu/*",
+    "https://geodle.me/*"
   ],
   "background": {
     "service_worker": "background.js",

@@ -111,6 +111,13 @@ const dailyGames: DailyGame[] = [
     icon: new URL(chrome.runtime.getURL("./icons/eo-guesser.png")),
     url: new URL("https://s2maps.eu/eo-guesser/"),
     script: "games/eoguesser.js"
+  },
+  {
+    game: "geodle",
+    displayName: "Geodle",
+    icon: new URL(chrome.runtime.getURL("./icons/geodle.png")),
+    url: new URL("https://geodle.me/"),
+    script: "games/geodle.js"
   }
 ];
 
