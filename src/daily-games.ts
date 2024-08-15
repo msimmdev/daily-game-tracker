@@ -90,6 +90,34 @@ const dailyGames: DailyGame[] = [
     icon: new URL(chrome.runtime.getURL("./icons/time-guessr.svg")),
     url: new URL("https://timeguessr.com/"),
     script: "games/time-guessr.js"
+  },
+  {
+    game: "travle",
+    displayName: "Travle",
+    icon: new URL(chrome.runtime.getURL("./icons/travle.svg")),
+    url: new URL("https://travle.earth/"),
+    script: "games/travle.js"
+  },
+  {
+    game: "countrydle",
+    displayName: "Countrydle",
+    icon: new URL(chrome.runtime.getURL("./icons/countrydle.png")),
+    url: new URL("https://www.countrydle.com/"),
+    script: "games/countrydle.js"
+  },
+  {
+    game: "eo-guesser",
+    displayName: "EOGuesser",
+    icon: new URL(chrome.runtime.getURL("./icons/eo-guesser.png")),
+    url: new URL("https://s2maps.eu/eo-guesser/"),
+    script: "games/eoguesser.js"
+  },
+  {
+    game: "geodle",
+    displayName: "Geodle",
+    icon: new URL(chrome.runtime.getURL("./icons/geodle.png")),
+    url: new URL("https://geodle.me/"),
+    script: "games/geodle.js"
   }
 ];
 

@@ -9,7 +9,11 @@
   ],
   "host_permissions": [
     "https://www.nytimes.com/*",
-    "https://timeguessr.com/*"
+    "https://timeguessr.com/*",
+    "https://travle.earth/*",
+    "https://www.countrydle.com/*",
+    "https://s2maps.eu/*",
+    "https://geodle.me/*"
   ],
   "background": {
     "service_worker": "background.js",
