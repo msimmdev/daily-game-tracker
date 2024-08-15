@@ -16,7 +16,7 @@ type EoGuesserHistory = {
 
 type EoGuesserData = {
   date: string;
-  guesses: number[][];
+  guesses?: number[][];
   hemisphere: "north" | "south";
   history: EoGuesserHistory[];
   off: number;
@@ -45,12 +45,13 @@ type EoGuesserData = {
       const gameStateJSON = localStorage.getItem("eoGuess");
       if (gameStateJSON !== null) {
         const gameState = JSON.parse(gameStateJSON) as EoGuesserData;
-        if ("guesses" in gameState) {
-          guesses = gameState.guesses.length;
+        if ("guesses" in gameState || "traveled" in gameState) {
+          guesses = gameState.guesses?.length ?? 0;
 
           if (guesses === 3) {
             status = "Complete";
           }
+
 
           if (lastUpdate === null || guesses !== lastUpdate) {
             lastUpdate = guesses;
@@ -60,7 +61,7 @@ type EoGuesserData = {
               lowestDistance: gameState.off,
               distanceTravelled: gameState.traveled,
               score: gameState.points,
-            }
+            };
 
             const message: Message = {
               game: gameName,
