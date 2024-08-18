@@ -115,7 +115,7 @@ type CrosswordData = {
             chrome.runtime.sendMessage(message);
           }
         }
-      }, 100);
+      }, 200);
     }
   });
 
