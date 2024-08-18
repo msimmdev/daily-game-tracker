@@ -118,6 +118,13 @@ const dailyGames: DailyGame[] = [
     icon: new URL(chrome.runtime.getURL("./icons/geodle.png")),
     url: new URL("https://geodle.me/"),
     script: "games/geodle.js"
+  },
+  {
+    game: "contexto",
+    displayName: "Contexto",
+    icon: new URL(chrome.runtime.getURL("./icons/contexto.png")),
+    url: new URL("https://contexto.me/"),
+    script: "games/contexto.js"
   }
 ];
 

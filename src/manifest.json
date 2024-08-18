@@ -13,7 +13,8 @@
     "https://travle.earth/*",
     "https://www.countrydle.com/*",
     "https://s2maps.eu/*",
-    "https://geodle.me/*"
+    "https://geodle.me/*",
+    "https://contexto.me/*"
   ],
   "background": {
     "service_worker": "background.js",
