@@ -46,7 +46,7 @@ type StrandsData = {
       return;
     }
 
-    const welcomeScreen = document.querySelector("[class$='welcomeContent']");
+    const welcomeScreen = document.querySelector("[class^='welcome-module']");
     if (welcomeScreen !== null && !welcomeScreen.checkVisibility()) {
       const gameStateJSON = localStorage.getItem("nyt-strands-beta");
       if (gameStateJSON != null) {
