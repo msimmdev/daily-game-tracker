@@ -14,7 +14,8 @@
     "https://www.countrydle.com/*",
     "https://s2maps.eu/*",
     "https://geodle.me/*",
-    "https://contexto.me/*"
+    "https://contexto.me/*",
+    "https://www.merriam-webster.com/*"
   ],
   "background": {
     "service_worker": "background.js",

@@ -125,6 +125,27 @@ const dailyGames: DailyGame[] = [
     icon: new URL(chrome.runtime.getURL("./icons/contexto.png")),
     url: new URL("https://contexto.me/"),
     script: "games/contexto.js"
+  },
+  {
+    game: "quordle-classic",
+    displayName: "Quordle (Classic)",
+    icon: new URL(chrome.runtime.getURL("./icons/quordle.svg")),
+    url: new URL("https://www.merriam-webster.com/games/quordle/#/"),
+    script: "games/quordle.js"
+  },
+  {
+    game: "quordle-chill",
+    displayName: "Quordle (Chill)",
+    icon: new URL(chrome.runtime.getURL("./icons/quordle.svg")),
+    url: new URL("https://www.merriam-webster.com/games/quordle/#/chill"),
+    script: "games/quordle.js"
+  },
+  {
+    game: "quordle-extreme",
+    displayName: "Quordle (Extreme)",
+    icon: new URL(chrome.runtime.getURL("./icons/quordle.svg")),
+    url: new URL("https://www.merriam-webster.com/games/quordle/#/extreme"),
+    script: "games/quordle.js"
   }
 ];
 
