@@ -55,70 +55,6 @@ type CrosswordData = {
     gameType = "daily";
   }
 
-  const observer = new MutationObserver(async (mutationList, obs) => {
-    if (!window.location.href.includes(`https://www.nytimes.com/crosswords/game/${gameType}`)) {
-      obs.disconnect();
-      console.log("NYT Crossword Tracking Disconnected");
-      return;
-    }
-
-    const game = document.querySelector("#puzzle");
-    if (game !== null) {
-      setTimeout(() => {
-        const gameStateJSON = localStorage.getItem(`localforage/${userName}@${gameId}`);
-        if (gameStateJSON != null) {
-          const gameState = JSON.parse(gameStateJSON) as CrosswordData;
-          const blankCells = gameState.status.blankCells;
-          if (lastUpdate !== blankCells) {
-            lastUpdate = blankCells;
-
-            const clueCells: Record<number, CrosswordData["cells"]> = {};
-            gameState.cells.forEach((cell) => {
-              cell.clues.forEach((clueNum) => {
-                if (clueNum in clueCells) {
-                  clueCells[clueNum].push(cell);
-                } else {
-                  clueCells[clueNum] = [cell];
-                }
-              });
-            });
-
-            const correctWords = Object.values(clueCells)
-              .map((cellList) => cellList.every((cell) => cell.guess !== "" && cell.guess == cell.answer) ? 1 : 0 as number)
-              .reduce((accumulator, currentItem) => accumulator + currentItem);
-
-            const state: CrosswordState = {
-              totalElapsedTime: gameState.timer.totalElapsedTime,
-              reveals: gameState.cells.filter((item) => item.revealed).length,
-              checks: gameState.cells.filter((item) => item.confirmed).length + gameState.cells.filter((item) => item.checked).length,
-              totalClues: Object.keys(clueCells).length,
-              correctClues: correctWords,
-            };
-
-            let status: Message["status"] = "Incomplete";
-            if (state.reveals > 0 || state.checks > 0) {
-              status = "Failed";
-            } else if (gameState.status.isSolved) {
-              status = "Complete";
-            }
-
-            const message: Message = {
-              game: gameName,
-              gameId: gameId.toString(),
-              status: gameState.status.isSolved ? "Complete" : "Incomplete",
-              stateTime: new Date().toJSON(),
-              gameState: state,
-            };
-
-            console.debug(gameName, message);
-
-            chrome.runtime.sendMessage(message);
-          }
-        }
-      }, 200);
-    }
-  });
-
   let lastUpdate: number | null = null;
   fetch(`https://www.nytimes.com/svc/crosswords/v6/puzzle/${gameType}.json`)
     .then((res) => res.json())
@@ -139,7 +75,68 @@ type CrosswordData = {
       }
     })
     .then(() => {
-      observer.observe(document.getRootNode(), { attributes: true, childList: true, subtree: true })
+      let intervalRef = setInterval(() => {
+
+        if (!window.location.href.includes(`https://www.nytimes.com/crosswords/game/${gameType}`)) {
+          clearInterval(intervalRef);
+          console.log("NYT Crossword Tracking Disconnected");
+          return;
+        }
+
+        const game = document.querySelector("#puzzle");
+        if (game !== null) {
+          const gameStateJSON = localStorage.getItem(`localforage/${userName}@${gameId}`);
+          if (gameStateJSON != null) {
+            const gameState = JSON.parse(gameStateJSON) as CrosswordData;
+            const blankCells = gameState.status.blankCells;
+            if (lastUpdate !== blankCells) {
+              lastUpdate = blankCells;
+
+              const clueCells: Record<number, CrosswordData["cells"]> = {};
+              gameState.cells.forEach((cell) => {
+                cell.clues.forEach((clueNum) => {
+                  if (clueNum in clueCells) {
+                    clueCells[clueNum].push(cell);
+                  } else {
+                    clueCells[clueNum] = [cell];
+                  }
+                });
+              });
+
+              const correctWords = Object.values(clueCells)
+                .map((cellList) => cellList.every((cell) => cell.guess !== "" && cell.guess == cell.answer) ? 1 : 0 as number)
+                .reduce((accumulator, currentItem) => accumulator + currentItem);
+
+              const state: CrosswordState = {
+                totalElapsedTime: gameState.timer.totalElapsedTime,
+                reveals: gameState.cells.filter((item) => item.revealed).length,
+                checks: gameState.cells.filter((item) => item.confirmed).length + gameState.cells.filter((item) => item.checked).length,
+                totalClues: Object.keys(clueCells).length,
+                correctClues: correctWords,
+              };
+
+              let status: Message["status"] = "Incomplete";
+              if (state.reveals > 0 || state.checks > 0) {
+                status = "Failed";
+              } else if (gameState.status.isSolved) {
+                status = "Complete";
+              }
+
+              const message: Message = {
+                game: gameName,
+                gameId: gameId.toString(),
+                status: gameState.status.isSolved ? "Complete" : "Incomplete",
+                stateTime: new Date().toJSON(),
+                gameState: state,
+              };
+
+              console.debug(gameName, message);
+
+              chrome.runtime.sendMessage(message);
+            }
+          }
+        }
+      }, 500);
       console.log("NYT Crossword Tracking Loaded!");
     })
 }
