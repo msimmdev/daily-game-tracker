@@ -14,14 +14,10 @@ type QuordleState = {
 };
 
 {
-  let gameName: "quordle-classic" | "quordle-chill" | "quordle-extreme";
-
-  if (window.location.href.includes("https://www.merriam-webster.com/games/quordle/#/chill")) {
-    gameName = "quordle-chill"
-  } else if (window.location.href.includes("https://www.merriam-webster.com/games/quordle/#/extreme")) {
-    gameName = "quordle-extreme"
-  } else if (window.location.href.includes("https://www.merriam-webster.com/games/quordle/#/")) {
-    gameName = "quordle-classic";
+  const quordleGame: Record<string, "quordle-classic" | "quordle-extreme" | "quordle-chill"> = {
+    "https://www.merriam-webster.com/games/quordle/#/": "quordle-classic",
+    "https://www.merriam-webster.com/games/quordle/#/extreme": "quordle-extreme",
+    "https://www.merriam-webster.com/games/quordle/#/chill": "quordle-chill"
   }
 
   function processBoard(game: HTMLDivElement, boardNum: number): QuordleBoardState | null {
@@ -47,18 +43,14 @@ type QuordleState = {
                 }
                 if (letterState !== "being guessed" && letterState !== "a future guess") {
                   guesses = i + 1;
-                  console.log("letter", letter);
                   guessedWord = guessedWord + letter.substring(1, 2);
-                  console.log("Add guess", guessedWord);
                 } else {
                   incompelte = true;
                 }
               } else {
-                console.log("p1");
                 return null;
               }
             } else {
-              console.log("p2");
               return null;
             }
           }
@@ -70,12 +62,10 @@ type QuordleState = {
             boardCompleted = true;
           }
         } else {
-          console.log("p4");
           return null;
         }
       }
     } else {
-      console.log("p5");
       return null;
     }
 
@@ -94,63 +84,70 @@ type QuordleState = {
     };
   }
 
+  let lastUpdate: number = 0;
+
   const observer = new MutationObserver(async (mutationList, obs) => {
-    if (!window.location.href.includes("https://www.merriam-webster.com/games/quordle/#/")) {
-      obs.disconnect();
-      console.log("Quordle Tracking Disconnected");
-      return;
-    }
+    setTimeout(() => {
+      if (!(window.location.href in quordleGame)) {
+        obs.disconnect();
+        console.log("Quordle Tracking Disconnected");
+        return;
+      }
 
-    const game = document.querySelector("#quordle-desktop-scrollbar");
-    if (game !== null && game instanceof HTMLDivElement) {
-      const board1Data = processBoard(game, 1);
-      const board2Data = processBoard(game, 2);
-      const board3Data = processBoard(game, 3);
-      const board4Data = processBoard(game, 4);
-      let lastUpdate: number = 0;
+      const gameName = quordleGame[window.location.href];
 
-      let status: Message["status"] = "Not Started";
-      let guesses = 0;
+      const game = document.querySelector("#quordle-desktop-scrollbar");
+      if (game !== null && game instanceof HTMLDivElement) {
+        const board1Data = processBoard(game, 1);
+        const board2Data = processBoard(game, 2);
+        const board3Data = processBoard(game, 3);
+        const board4Data = processBoard(game, 4);
 
-      if (board1Data !== null && board2Data !== null && board3Data !== null && board4Data !== null) {
-        if (board1Data.status == "Failed" || board2Data.status == "Failed" || board3Data.status == "Failed" || board4Data.status == "Failed") {
-          status = "Failed";
-        } else if (board1Data.status == "Incomplete" || board2Data.status == "Incomplete" || board3Data.status == "Incomplete" || board4Data.status == "Incomplete") {
-          status = "Incomplete";
-        } else if (board1Data.status == "Complete" && board2Data.status == "Complete" && board3Data.status == "Complete" && board4Data.status == "Complete") {
-          status = "Complete";
-        }
+        let status: Message["status"] = "Not Started";
+        let guesses = 0;
 
-        guesses = Math.max(board1Data.guesses, board2Data.guesses, board3Data.guesses, board4Data.guesses);
-
-        if (lastUpdate !== guesses) {
-          lastUpdate = guesses;
-
-          const gameState: QuordleState = {
-            guesses: guesses,
-            guessList: board1Data.guessList,
-            board1State: board1Data,
-            board2State: board2Data,
-            board3State: board3Data,
-            board4State: board4Data,
+        if (board1Data !== null && board2Data !== null && board3Data !== null && board4Data !== null) {
+          if (board1Data.status == "Failed" || board2Data.status == "Failed" || board3Data.status == "Failed" || board4Data.status == "Failed") {
+            status = "Failed";
+          } else if (board1Data.status == "Incomplete" || board2Data.status == "Incomplete" || board3Data.status == "Incomplete" || board4Data.status == "Incomplete") {
+            status = "Incomplete";
+          } else if (board1Data.status == "Complete" && board2Data.status == "Complete" && board3Data.status == "Complete" && board4Data.status == "Complete") {
+            status = "Complete";
           }
 
-          const message: Message = {
-            game: gameName,
-            gameId: "",
-            status: status,
-            stateTime: new Date().toJSON(),
-            gameState: gameState,
-          };
+          guesses = Math.max(board1Data.guesses, board2Data.guesses, board3Data.guesses, board4Data.guesses);
 
-          console.debug(gameName, message);
+          if (lastUpdate !== guesses) {
+            lastUpdate = guesses;
 
-          chrome.runtime.sendMessage(message);
+            const gameState: QuordleState = {
+              guesses: guesses,
+              guessList: board1Data.guessList,
+              board1State: board1Data,
+              board2State: board2Data,
+              board3State: board3Data,
+              board4State: board4Data,
+            }
+
+            const message: Message = {
+              game: gameName ?? "",
+              gameId: "",
+              status: status,
+              stateTime: new Date().toJSON(),
+              gameState: gameState,
+            };
+
+            console.debug(gameName, message);
+
+            chrome.runtime.sendMessage(message);
+          }
         }
       }
-    }
+    }, 100)
   });
 
-  observer.observe(document.getRootNode(), { attributes: true, childList: true, subtree: true })
-  console.log("Quordle Tracking Loaded!");
+  if (window.location.href in quordleGame) {
+    observer.observe(document.getRootNode(), { attributes: true, childList: true, subtree: true })
+    console.log("Quordle Tracking Loaded!");
+  }
 }
